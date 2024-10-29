@@ -6,29 +6,30 @@ server.use(express.static("public"));
 
 //All your code goes here
 let activeSessions = {};
-let wordleAnswer;
+
 //   ***RANDOM WORD GENERATOR***
 async function randomWordGen() {
-  let response = await fetch(
-    "https://random-word-api.herokuapp.com/word?length=5&number=1"
-  );
+  let response = await fetch(`https://api.datamuse.com/words?sp=?????&max=200`);
 
   let result = await response.json();
+  //Get a random word from the apis 'list' to be able to return result at index of random result.length
+  let randNum = Math.floor(Math.random() * result.length);
   //console.log(result);
-  return result[0];
+  return result[randNum].word;
 }
 
 server.get("/newgame", async (req, res) => {
+  let wordleAnswer;
   //If statement to put in the custom query string as the wordle answer, or to use the random word generator
-  if (req.query.answer) {
-    req.wordleAnswer = req.query.answer;
+  if (req.query.answer.length == 5) {
+    wordleAnswer = req.query.answer.toLowerCase();
   } else {
-    req.wordleAnswer = await randomWordGen();
+    wordleAnswer = await randomWordGen();
   }
 
   let newID = uuid.v4();
   let newGame = {
-    wordToGuess: req.wordleAnswer,
+    wordToGuess: wordleAnswer,
     guesses: [],
     wrongLetters: [],
     closeLetters: [],

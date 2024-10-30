@@ -21,7 +21,7 @@ async function randomWordGen() {
 server.get("/newgame", async (req, res) => {
   let wordleAnswer;
   //If statement to put in the custom query string as the wordle answer, or to use the random word generator
-  if (req.query.answer.length == 5) {
+  if (req.query.answer && req.query.answer.length === 5) {
     wordleAnswer = req.query.answer.toLowerCase();
   } else {
     wordleAnswer = await randomWordGen();
@@ -38,18 +38,33 @@ server.get("/newgame", async (req, res) => {
     gameOver: false,
   };
   activeSessions[newID] = newGame;
+  // if (req.query.answer == wordToGuess) {
+  //   newGame.gameOver == true;
+  // }
   res.status(201);
   res.send({ sessionID: newID });
   console.log(activeSessions);
 });
 
 server.get("/gamestate", (req, res) => {
-  let sessionID = req.params.newID;
-  let gameState = {
-    wordToGuess: randomWordGen(),
-    guesses: [],
-  };
-  res.status(200);
+  //let ID = req.params.newID;
+  let sessionID = req.query.sessionID;
+  if (activeSessions[sessionID]) {
+    //console.log({ gameState: activeSessions[sessionID] });
+    res.status(200);
+    res.send({ gameState: activeSessions[sessionID] });
+  } else if (!sessionID) {
+    res.status(400).send({ error: "No sessionID provided" });
+  } else {
+    res
+      .status(404)
+      .send({ error: "Session ID does not match any active session" });
+  }
+  // let gameState = {
+  //   wordToGuess: randomWordGen(),
+  //   guesses: [],
+  // };
+  // res.status(200);
 });
 
 //Do not remove this line. This allows the test suite to start

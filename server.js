@@ -38,9 +38,11 @@ server.get("/newgame", async (req, res) => {
     gameOver: false,
   };
   activeSessions[newID] = newGame;
-  // if (req.query.answer == wordToGuess) {
-  //   newGame.gameOver == true;
-  // }
+  if (req.query.answer) {
+    newGame.wordToGuess = req.query.answer;
+    newGame.gameOver = true;
+    return newGame.gameOver;
+  }
   res.status(201);
   res.send({ sessionID: newID });
   console.log(activeSessions);

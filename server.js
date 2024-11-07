@@ -41,7 +41,7 @@ server.get("/newgame", async (req, res) => {
   if (req.query.answer) {
     newGame.wordToGuess = req.query.answer;
     newGame.gameOver = true;
-    return newGame.gameOver;
+    //return newGame.gameOver;
   }
   res.status(201);
   res.send({ sessionID: newID });
@@ -67,6 +67,22 @@ server.get("/gamestate", (req, res) => {
   //   guesses: [],
   // };
   // res.status(200);
+});
+
+server.post("/guess", (req, res) => {
+  let sessionID = req.body.sessionID;
+  let guess = req.body.guess;
+  let letters = guess.split("").toString();
+  if (!sessionID) {
+    res.status(404).send({ error: "No sessionID provided" });
+  } else if (letters.length != 5) {
+    res.status(400).send({ error: "Invalid guess" });
+  } else if (activeSessions[sessionID]) {
+    let result;
+
+    let realLetters = session.wordToGuess.split("");
+    for (let i = 0; letters.length >= i; i++) {}
+  }
 });
 
 //Do not remove this line. This allows the test suite to start
